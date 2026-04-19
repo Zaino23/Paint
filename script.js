@@ -4,81 +4,84 @@ const box = document.getElementById('box');
 const brush = document.getElementById('brush');
 const erasor = document.getElementById('erasor');
 let onOff = false;
-
-canvas.width = canvas.offsetWidth;
-canvas.height = canvas.offsetHeight;
-
-const mouse = {
-  x: undefined,
-  y: undefined,
-}
-
+let erasing = false;
+let last = {x: 0, y:0 };
 let holding = false;
-
 let color = 'black';
+
+
+canvas.width = box.clientWidth;
+canvas.height = box.clientHeight;
+
+
+window.addEventListener('resize', e =>{
+  canvas.width = box.clientWidth;
+  canvas.height = box.clientHeight;
+})
 
 ctx.fillStyle = 'white';
 ctx.fillRect(0, 0, canvas.width, canvas.height);
-/*
-window.addEventListener('resize', function() {
-  canvas.width = box.clientWidth;
-  canvas.height = box.clientHeight;
-})*/
 
-canvas.addEventListener('touchmove', function(event){
-  mouse.x = event.offsetX;
-  mouse.y = event.offsetY;
-})
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
 
-canvas.addEventListener('touchstart', function(event){
-    holding = true;
-    animate();
-})
-
-document.addEventListener('touchend', function() {
-  holding = false;
-})
-
-canvas.addEventListener('mousemove', function(event){
-    mouse.x = event.offsetX;
-    mouse.y = event.offsetY;
-})
-
-canvas.addEventListener('mousedown', function () {
-    holding = true;
-    animate();
-})
-
-document.addEventListener('mouseup', function() {
-  holding = false;
-})
-
-function drawCircle() {
-  if (holding === true && onOff === true || color === 'white') { 
-  ctx.fillStyle = `${color}`;
-  ctx.beginPath();
-  ctx.arc(mouse.x, mouse.y, 10, 0, Math.PI * 2);
-  ctx.fill();
-}
-}
-function animate() {
-  if (!holding) return;
-    drawCircle();
-    requestAnimationFrame(animate);
+  if(e.touches) {
+    const t = e.touches[0];
+    return {
+      x: t.clientX - rect.left,
+      y: t.clientY - rect.top,
+    };
   }
-/*
-function brushOnOff() {
-  if (onOff === false) {
-    color = 'black';
-    onOff = true;
-    erasor.classList.remove('active');
-    brush.classList.add('active');
-  } else {
-    !onOff;
-    brush.classList.remove('active')
+
+  return {
+    x: e.clientX - rect.left,
+    y: e.clientY - rect.top,
+  };
+}
+
+canvas.addEventListener('touchstart', e =>{
+  holding = true;
+  last = getPos(e);
+})
+
+canvas.addEventListener('touchmove', e =>{
+  const pos = getPos(e);
+  drawing(last, pos);
+  last = pos;
+})
+
+document.addEventListener('touchend', () => holding = false);
+
+canvas.addEventListener('mousedown', e => {
+    holding = true;
+    last = getPos(e);
+})
+
+canvas.addEventListener('mousemove', e => {
+  if(!holding) return;
+  const pos = getPos(e);
+  drawing(last, pos);
+  last = pos;
+});
+
+document.addEventListener('mouseup', () => holding= false);
+
+function drawing(last, pos) {
+  if(onOff === true && holding === true) {
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(last.x, last.y);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+  } else if (erasing === true && onOff === false ) {
+      ctx.strokeStyle = `${color}`;
+      ctx.beginPath();
+      ctx.moveTo(last.x, last.y);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
   }
-};
-*/
+}
+
 
 function brushOnoffpro() {
   if (brush.classList.contains('active')) {
@@ -96,17 +99,16 @@ function brushOnoffpro() {
 function clean() {
   ctx.fillStyle = 'white';
   ctx.fillRect(0, 0, canvas.width, canvas.height)
-  console.log(ctx.fillStyle);
 }
 
 function manualErase() {
   if (color === 'black') {
   onOff = false
+  erasing = true;
   brush.classList.remove('active');
   erasor.classList.add('active');
   holding = false;
   color = 'white';
-  drawCircle();
   } else {
     erasor.classList.remove('active');
     color = 'black';

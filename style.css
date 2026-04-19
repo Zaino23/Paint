@@ -24,17 +24,16 @@ body {
 
 
 .control{
-  font-size: 4vw;  
-  padding: 2vw 4vw;
-  margin: 2px;
+  font-size: 2.5vw;  
+  padding: 0.5vw 1vw;
+  margin-top: 7px;
   cursor: pointer;
   background-color: hsl(0, 2%, 76%);
   border: hsl(0, 2%, 67%);
 }
 .control:hover{
-  transform: scale(1.2);
+  transform: scale(1.1);
   text-align: center;
-  margin: 4px;
   cursor: pointer;
   background-color: hsl(0, 3%, 81%);
   border: hsl(0, 0%, 55%);
@@ -48,8 +47,7 @@ body {
 .control.active{
   background-color: hsl(0, 0%, 66%);
   border: hsl(0, 0%, 49%);
-  scale: 1.2;
-  margin: 5px;
+  scale: 1.1;
 }
 
 .controls {
