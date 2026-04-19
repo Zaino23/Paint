@@ -5,12 +5,8 @@ const brush = document.getElementById('brush');
 const erasor = document.getElementById('erasor');
 let onOff = false;
 
-//canvas.width = box.clientWidth;
-//canvas.height = box.clientHeight;
-
-canvas.width = canvas.offsetWidth;
-canvas.height = canvas.offsetHeight;
-
+canvas.width = box.clientWidth;
+canvas.height = box.clientHeight;
 
 const mouse = {
   x: undefined,
@@ -23,11 +19,11 @@ let color = 'black';
 
 ctx.fillStyle = 'white';
 ctx.fillRect(0, 0, canvas.width, canvas.height);
-/*
+
 window.addEventListener('resize', function() {
   canvas.width = box.clientWidth;
   canvas.height = box.clientHeight;
-})*/
+})
 
 canvas.addEventListener('mousemove', function(event){
     mouse.x = event.offsetX;
