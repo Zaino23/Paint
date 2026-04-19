@@ -17,6 +17,14 @@ let holding = false;
 
 let color = 'black';
 
+ctx.fillStyle = 'white';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+window.addEventListener('resize', function() {
+  canvas.width = box.clientWidth;
+  canvas.height = box.clientHeight;
+})
+
 canvas.addEventListener('mousemove', function(event){
     mouse.x = event.offsetX;
     mouse.y = event.offsetY;
@@ -72,7 +80,9 @@ function brushOnoffpro() {
 }
 
 function clean() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'white';
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
+  console.log(ctx.fillStyle);
 }
 
 function manualErase() {
