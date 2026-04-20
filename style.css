@@ -59,3 +59,7 @@ body {
 #size {
   display: none;
 }
+#colorPicker {
+  margin-top: 4vh;
+  display: none;
+}

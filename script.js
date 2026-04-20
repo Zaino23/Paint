@@ -3,11 +3,13 @@ const ctx = canvas.getContext('2d');
 const box = document.getElementById('box');
 const brush = document.getElementById('brush');
 const erasor = document.getElementById('erasor');
+const colorPicker = document.getElementById('colorPicker');
+const size = document.getElementById('size');
+let color = colorPicker.value;
 let onOff = false;
 let erasorMode = false;
 let holding = false;
-let color = 'black';
-const size = document.getElementById('size');
+
 
 let lastCords = {x: undefined, y:undefined};
 let currCords = {x:undefined, y:undefined};
@@ -15,14 +17,28 @@ let currCords = {x:undefined, y:undefined};
 canvas.width = box.clientWidth;
 canvas.height = box.clientHeight;
 
+ctx.strokeStyle = colorPicker.value;
+ctx.lineWidth = size.value;
+ctx.lineCap = 'round';
+ctx.lineJoin = 'round';
+
+colorPicker.addEventListener('input', () => {
+  color = colorPicker.value;
+  ctx.strokeStyle = color;
+});
+
 size.addEventListener('input', () => {
   ctx.lineWidth = size.value;
 })
 
-window.addEventListener('resize', e =>{
+window.addEventListener('resize', () => {
   canvas.width = box.clientWidth;
   canvas.height = box.clientHeight;
-})
+
+  ctx.lineWidth = size.value;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+});
 
 canvas.addEventListener('pointerdown', e => {
   holding = true;
@@ -43,7 +59,6 @@ document.addEventListener('pointerup', e => holding = false);
 
 function drawing() {
   if(holding  && (onOff || erasorMode)) {
-    ctx.strokeStyle = color;
     ctx.beginPath();
     ctx.moveTo(lastCords.x, lastCords.y);
     ctx.lineTo(currCords.x, currCords.y);
@@ -59,6 +74,7 @@ function brushOnoffpro() {
     onOff = false;
     brush.classList.remove('active');
     size.style.display = 'none';
+    colorPicker.style.display = 'none';
     return;
   }
 
@@ -68,8 +84,8 @@ function brushOnoffpro() {
   erasor.classList.remove('active');
   brush.classList.add('active');
   ctx.globalCompositeOperation = 'source-over';
-  ctx.strokeStyle = color;
   size.style.display = 'block';
+  colorPicker.style.display = 'block';
 }
 
 function clean() {
@@ -93,4 +109,5 @@ function manualErase() {
   brush.classList.remove('active');
   erasor.classList.add('active');
   size.style.display = 'block';
+  colorPicker.style.display = 'none';
 }
