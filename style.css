@@ -56,3 +56,6 @@ body {
   flex-wrap: wrap;
   gap: 2vw;
 }
+#size {
+  display: none;
+}

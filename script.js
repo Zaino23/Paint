@@ -7,6 +7,7 @@ let onOff = false;
 let erasorMode = false;
 let holding = false;
 let color = 'black';
+const size = document.getElementById('size');
 
 let lastCords = {x: undefined, y:undefined};
 let currCords = {x:undefined, y:undefined};
@@ -14,6 +15,9 @@ let currCords = {x:undefined, y:undefined};
 canvas.width = box.clientWidth;
 canvas.height = box.clientHeight;
 
+size.addEventListener('input', () => {
+  ctx.lineWidth = size.value;
+})
 
 window.addEventListener('resize', e =>{
   canvas.width = box.clientWidth;
@@ -54,6 +58,7 @@ function brushOnoffpro() {
   if (brush.classList.contains('active')) {
     onOff = false;
     brush.classList.remove('active');
+    size.style.display = 'none';
     return;
   }
 
@@ -64,8 +69,7 @@ function brushOnoffpro() {
   brush.classList.add('active');
   ctx.globalCompositeOperation = 'source-over';
   ctx.strokeStyle = color;
-  ctx.lineWidth = 30;
-
+  size.style.display = 'block';
 }
 
 function clean() {
@@ -77,6 +81,7 @@ function manualErase() {
   if(erasor.classList.contains('active')) {
     erasor.classList.remove('active');
     erasorMode = false;
+    size.style.display = 'none';
     return;
   }
   
@@ -84,8 +89,8 @@ function manualErase() {
   erasorMode = true;
   ctx.globalCompositeOperation = 'destination-out';
   ctx.strokeStyle = 'rgba(0,0,0,1)';
-  ctx.lineWidth = 40;
+  ctx.lineWidth = size.value;
   brush.classList.remove('active');
   erasor.classList.add('active');
-
+  size.style.display = 'block';
 }
