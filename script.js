@@ -4,11 +4,12 @@ const box = document.getElementById('box');
 const brush = document.getElementById('brush');
 const erasor = document.getElementById('erasor');
 let onOff = false;
-let erasing = false;
-let last = {x: 0, y:0 };
+let erasorMode = false;
 let holding = false;
 let color = 'black';
 
+let lastCords = {x: undefined, y:undefined};
+let currCords = {x:undefined, y:undefined};
 
 canvas.width = box.clientWidth;
 canvas.height = box.clientHeight;
@@ -19,66 +20,32 @@ window.addEventListener('resize', e =>{
   canvas.height = box.clientHeight;
 })
 
-ctx.fillStyle = 'white';
-ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-function getPos(e) {
-  const rect = canvas.getBoundingClientRect();
-
-  if(e.touches) {
-    const t = e.touches[0];
-    return {
-      x: t.clientX - rect.left,
-      y: t.clientY - rect.top,
-    };
-  }
-
-  return {
-    x: e.clientX - rect.left,
-    y: e.clientY - rect.top,
-  };
-}
-
-canvas.addEventListener('touchstart', e =>{
+canvas.addEventListener('pointerdown', e => {
   holding = true;
-  last = getPos(e);
+  lastCords.x = e.offsetX;
+  lastCords.y = e.offsetY;
 })
 
-canvas.addEventListener('touchmove', e =>{
-  const pos = getPos(e);
-  drawing(last, pos);
-  last = pos;
-})
-
-document.addEventListener('touchend', () => holding = false);
-
-canvas.addEventListener('mousedown', e => {
-    holding = true;
-    last = getPos(e);
-})
-
-canvas.addEventListener('mousemove', e => {
+canvas.addEventListener('pointermove', e => {
   if(!holding) return;
-  const pos = getPos(e);
-  drawing(last, pos);
-  last = pos;
-});
+  currCords.x = e.offsetX;
+  currCords.y = e.offsetY;
+  drawing();
+  lastCords.x = currCords.x;
+  lastCords.y = currCords.y;
+})
 
-document.addEventListener('mouseup', () => holding= false);
+document.addEventListener('pointerup', e => holding = false);
 
-function drawing(last, pos) {
-  if(onOff === true && holding === true) {
+function drawing() {
+  if(holding  && (onOff || erasorMode)) {
     ctx.strokeStyle = color;
     ctx.beginPath();
-    ctx.moveTo(last.x, last.y);
-    ctx.lineTo(pos.x, pos.y);
+    ctx.moveTo(lastCords.x, lastCords.y);
+    ctx.lineTo(currCords.x, currCords.y);
     ctx.stroke();
-  } else if (erasing === true && onOff === false ) {
-      ctx.strokeStyle = `${color}`;
-      ctx.beginPath();
-      ctx.moveTo(last.x, last.y);
-      ctx.lineTo(pos.x, pos.y);
-      ctx.stroke();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
   }
 }
 
@@ -91,9 +58,14 @@ function brushOnoffpro() {
   }
 
   onOff = true;
+  erasorMode = false;
   color = 'black';
   erasor.classList.remove('active');
   brush.classList.add('active');
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 30;
+
 }
 
 function clean() {
@@ -102,15 +74,18 @@ function clean() {
 }
 
 function manualErase() {
-  if (color === 'black') {
-  onOff = false
-  erasing = true;
+  if(erasor.classList.contains('active')) {
+    erasor.classList.remove('active');
+    erasorMode = false;
+    return;
+  }
+  
+  onOff = false;
+  erasorMode = true;
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.strokeStyle = 'rgba(0,0,0,1)';
+  ctx.lineWidth = 40;
   brush.classList.remove('active');
   erasor.classList.add('active');
-  holding = false;
-  color = 'white';
-  } else {
-    erasor.classList.remove('active');
-    color = 'black';
-  }
+
 }
