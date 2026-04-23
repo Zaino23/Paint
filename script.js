@@ -28,17 +28,14 @@ colorPicker.addEventListener('input', () => {
 });
 
 size.addEventListener('input', () => {
-  ctx.lineWidth = size.value;
+  let brushSize = Number(size.value);
+  if(erasor.classList.contains('active')) {
+      brushSize += 10;
+      ctx.lineWidth = brushSize;
+      return;
+    }
+    ctx.lineWidth = brushSize;
 })
-
-window.addEventListener('resize', () => {
-  canvas.width = box.clientWidth;
-  canvas.height = box.clientHeight;
-
-  ctx.lineWidth = size.value;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-});
 
 canvas.addEventListener('pointerdown', e => {
   holding = true;
@@ -80,12 +77,13 @@ function brushOnoffpro() {
 
   onOff = true;
   erasorMode = false;
-  color = 'black';
   erasor.classList.remove('active');
   brush.classList.add('active');
   ctx.globalCompositeOperation = 'source-over';
+  ctx.strokeStyle = colorPicker.value;
   size.style.display = 'block';
   colorPicker.style.display = 'block';
+  ctx.lineWidth = Number(size.value);
 }
 
 function clean() {
@@ -98,6 +96,9 @@ function manualErase() {
     erasor.classList.remove('active');
     erasorMode = false;
     size.style.display = 'none';
+    ctx.strokeStyle = color;
+    ctx.globalCompositeOperation= 'source-over';
+    ctx.lineWidth = Number(size.value);
     return;
   }
   
@@ -105,8 +106,8 @@ function manualErase() {
   erasorMode = true;
   ctx.globalCompositeOperation = 'destination-out';
   ctx.strokeStyle = 'rgba(0,0,0,1)';
-  ctx.lineWidth = size.value;
   brush.classList.remove('active');
+  ctx.lineWidth = Number(size.value) + 10;
   erasor.classList.add('active');
   size.style.display = 'block';
   colorPicker.style.display = 'none';
